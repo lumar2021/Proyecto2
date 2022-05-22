@@ -1,0 +1,652 @@
+
+/**
+ * Esta clase se encarga de leer el csv y separarlo por atributos de la clase Dato
+ * 
+ * @author Felipe Martinez, Kristian Restrepo y Luisa Álvarez
+ * @version 1.0
+ */
+import java.util.*;
+import java.io.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+public class MarcoDeDatos {
+
+	/**
+	 * Arraylist de tipo Dato para guardar el csv separado por comas para volverlo
+	 * elemento de tipo Dato
+	 */
+	public ArrayList<Dato> datos = new ArrayList<Dato>();
+
+	/**
+	 * Constructor por defecto de MarcoDeDatos
+	 */
+	public MarcoDeDatos() {
+	}
+
+	/**
+	 * Método que lee el csv por Scanner El método obvia la primera linea del csv El
+	 * método reemplaza las comillas por el valor mínimo de char Este método separa
+	 * el csv por comas y lo convierte en un arreglo llamado separarse El método
+	 * mira el tamaño de separarse y los espacios vacios los llena con valores de
+	 * 0.00005(valor tomado porque no habría un elemento que posea dicho valor) El
+	 * método convierte cada posición de separarse en un atributo del constructor
+	 * tipo Dato y le agrega dichos valores al arreglo de tipo Dato
+	 * 
+	 * @param es el path del archivo que leerá el método
+	 * @Exception FileNotFoundException
+	 */
+	public void lecturaCSV(String path) {
+		try {
+			String txt = "";
+			File file = new File(path);
+			Scanner input = new Scanner(file);
+
+			if (input.hasNextLine()) {
+				input.nextLine();
+			}
+
+			while (input.hasNextLine()) {
+				Dato dato1 = new Dato();
+				txt = input.nextLine();
+				String este = txt.replace('"', '\u0000');
+				String[] separarse = este.split(",");
+				for (int i = 0; i < separarse.length; i++) {
+					String nuevoTxt = separarse[i];
+					separarse[i] = nuevoTxt;
+					if (separarse[i] == "") {
+						separarse[i] = "0.00005";
+					}
+				}
+
+				if (separarse.length == 8) {
+					dato1.setStation(separarse[0]);
+					dato1.setName(separarse[1]);
+					dato1.setCountry(separarse[2]);
+					dato1.setDate(separarse[3]);
+					dato1.setPrcp(Double.parseDouble(separarse[4]));
+					dato1.setTavg(Double.parseDouble(separarse[5]));
+					dato1.setTmax(Double.parseDouble(separarse[6]));
+					dato1.setTmin(Double.parseDouble(separarse[7]));
+				}
+				if (separarse.length == 7) {
+					dato1.setStation(separarse[0]);
+					dato1.setName(separarse[1]);
+					dato1.setCountry(separarse[2]);
+					dato1.setDate(separarse[3]);
+					dato1.setPrcp(Double.parseDouble(separarse[4]));
+					dato1.setTavg(Double.parseDouble(separarse[5]));
+					dato1.setTmax(Double.parseDouble(separarse[6]));
+					dato1.setTmin(0.00005);
+				}
+				if (separarse.length == 6) {
+					dato1.setStation(separarse[0]);
+					dato1.setName(separarse[1]);
+					dato1.setCountry(separarse[2]);
+					dato1.setDate(separarse[3]);
+					dato1.setPrcp(Double.parseDouble(separarse[4]));
+					dato1.setTavg(Double.parseDouble(separarse[5]));
+					dato1.setTmax(0.00005);
+					dato1.setTmin(0.00005);
+				}
+				datos.add(dato1);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	/**
+	 * Este metodo suma los valores de las columnas prcp, tavg, tmin y tmax y lo
+	 * divide por la cantidad de datos presentes en el csv El método tiene en cuenta
+	 * a los valores diferentes de 0.00005
+	 * 
+	 * @param entero que significa si se retorna el promedio de prpc, tavg, tmin o
+	 *               tmax
+	 * @return devuelve en un string un texto que contiene los valores del promedio
+	 *         especificado
+	 */
+	public String promedio(int a) {
+		double suma = 0;
+		int contador = 0;
+		String texto = "";
+		double promedio = 0.0;
+		if (a == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getPrcp() == 0.00005)) {
+					suma += datos.get(i).getPrcp();
+					contador += 1;
+				}
+			}
+
+			promedio = suma / contador;
+			texto = "El promedio de prcp fue: " + promedio;
+		}
+		if (a == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTavg() == 0.00005)) {
+					suma += datos.get(i).getTavg();
+					contador += 1;
+				}
+			}
+
+			promedio = suma / contador;
+			texto = "El promedio de tavg fue: " + promedio;
+		}
+		if (a == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmax() == 0.00005)) {
+					suma += datos.get(i).getTmax();
+					contador += 1;
+				}
+			}
+			promedio = suma / contador;
+			texto = "El promedio de tmax fue: " + promedio;
+		}
+		if (a == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmin() == 0.00005)) {
+					suma += datos.get(i).getTmin();
+					contador += 1;
+				}
+			}
+
+			promedio = suma / contador;
+			texto = "El promedio de temperaturas minimas fue: " + promedio;
+		}
+		return texto;
+	}
+
+	/**
+	 * Este metodo muestra el lugar del csv
+	 * 
+	 * @return texto que contiene la estacion, nombre y pais del csv
+	 */
+	public String infoLugarCsv() {
+		String info = "La estacion es: " + datos.get(2).getStation() + ", El nombre es: " + datos.get(2).getName()
+				+ ", El pais es: " + datos.get(2).getCountry();
+		return info;
+	}
+
+	/**
+	 * Este método busca el menor total de prcp, tavg, tmax y tmin El método asigna
+	 * el mínimo al primer valor del elemento y lo compara con las otras posiciones
+	 * El método obvia los valores de 0.00005
+	 * 
+	 * @param numero que significa si menor total se busca en prcp, tavg, tmax o
+	 *               tmin
+	 * @return el método retorna el texto que contiene los valores de la fila en que
+	 *         se encuentra el menor total en formato tabla
+	 */
+	public String menorTotal(int numero) {
+		String texto = "";
+		String contador = "";
+		double menor = 0.0;
+
+		if (numero == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					menor = datos.get(i).getPrcp();
+					contador = " prcp fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+				} else {
+					if (menor == 0.0005) {
+						menor = datos.get(i).getPrcp();
+					} else if (datos.get(i).getPrcp() < menor) {
+						if (!(datos.get(i).getPrcp() == 0.00005)) {
+							menor = datos.get(i).getPrcp();
+							contador = " prcp fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+						}
+
+					}
+				}
+
+			}
+		} else if (numero == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					menor = datos.get(i).getTavg();
+					contador = " tavg fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+				} else {
+					if (menor == 0.00005) {
+						menor = datos.get(i).getTavg();
+					} else if (datos.get(i).getTavg() < menor) {
+						if (!(datos.get(i).getTavg() == 0.00005)) {
+							menor = datos.get(i).getTavg();
+							contador = " tavg fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+						}
+					}
+				}
+			}
+		}
+
+		else if (numero == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					menor = datos.get(i).getTmax();
+					contador = " tmax fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin();
+				} else {
+					if (menor == 0.00005) {
+						menor = datos.get(i).getTmax();
+					} else if (datos.get(i).getTmax() < menor) {
+						if (!(datos.get(i).getTmax() == 0.00005)) {
+							menor = datos.get(i).getTmax();
+							contador = " tmax fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin();
+						}
+					}
+				}
+			}
+		} else if (numero == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					menor = datos.get(i).getTmin();
+					contador = " tmin fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*";
+				} else {
+					if (menor == 0.0005) {
+						menor = datos.get(i).getTmin();
+					} else if (datos.get(i).getTmin() < menor) {
+						if (!(datos.get(i).getTmin() == 0.00005)) {
+							menor = datos.get(i).getTmin();
+							contador = " tmin fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*";
+						}
+					}
+				}
+
+			}
+		}
+
+		return "El menor dato de " + contador;
+	}
+
+	/**
+	 * Este método busca el mayor total de prcp, tavg, tmax y tmin El método asigna
+	 * el maximo al primer valor del elemento y lo compara con las otras posiciones
+	 * El método obvia los valores de 0.00005
+	 * 
+	 * @param numero que significa si mayor total se busca en prcp, tavg, tmax o
+	 *               tmin
+	 * @return el método retorna el texto que contiene los valores de la fila en que
+	 *         se encuentra el mayor total en formato tabla
+	 */
+	public String mayorTotal(int numero) {
+		String texto = "";
+		String contador = "";
+		double mayor = 0.0;
+
+		if (numero == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					mayor = datos.get(i).getPrcp();
+					contador = " prcp fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+				} else {
+					if (mayor == 0.0005) {
+						mayor = datos.get(i).getPrcp();
+					} else if (datos.get(i).getPrcp() > mayor) {
+						if (!(datos.get(i).getPrcp() == 0.00005)) {
+							mayor = datos.get(i).getPrcp();
+							contador = " prcp fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+						}
+
+					}
+				}
+
+			}
+		}
+
+		else if (numero == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					mayor = datos.get(i).getTavg();
+					contador = " tavg fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+				} else {
+					if (mayor == 0.00005) {
+						mayor = datos.get(i).getTavg();
+					} else if (datos.get(i).getTavg() > mayor) {
+						if (!(datos.get(i).getTavg() == 0.00005)) {
+							mayor = datos.get(i).getTavg();
+							contador = " tavg fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin();
+						}
+					}
+				}
+			}
+		}
+
+		else if (numero == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					mayor = datos.get(i).getTmax();
+					contador = " tmax fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t"
+							+ datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg()
+							+ "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin();
+				} else {
+					if (mayor == 0.00005) {
+						mayor = datos.get(i).getTmax();
+					} else if (datos.get(i).getTmax() > mayor) {
+						if (!(datos.get(i).getTmax() == 0.00005)) {
+							mayor = datos.get(i).getTmax();
+							contador = " tmax fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin();
+						}
+					}
+				}
+			}
+		} else if (numero == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (i == 0) {
+					mayor = datos.get(i).getTmin();
+					contador = " tmin fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*";
+				} else {
+					if (mayor == 0.0005) {
+						mayor = datos.get(i).getTmin();
+					} else if (datos.get(i).getTmin() > mayor) {
+						if (!(datos.get(i).getTmin() == 0.00005)) {
+							mayor = datos.get(i).getTmin();
+							contador = " tmin fue \n" + datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*";
+						}
+					}
+				}
+			}
+
+		}
+		return "El mayor dato de " + contador;
+	}
+
+	/**
+	 * El método busca el dato que mas se repite en una prcp, tavg, tmax y tmin El
+	 * método agrega uno a las repeticiones cada vez que encuentra de nuevo el mismo
+	 * double El método obvia los valores de 0.00005
+	 * 
+	 * @param es el número que determina si la moda se busca en prcp, tavg, tmax o
+	 *           tmin
+	 * @return es un texto que contiene el dato que mas se repite específico
+	 */
+	public String moda(int numero) {
+		int maximoNumRepeticiones = 0;
+		double moda = 0;
+		String texto = "";
+
+		if (numero == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getPrcp() == 0.00005)) {
+					int numRepeticiones = 0;
+					for (int j = 0; j < datos.size(); j++) {
+
+						if (datos.get(i).getPrcp() == datos.get(j).getPrcp()) {
+							numRepeticiones++;
+						}
+						if (numRepeticiones > maximoNumRepeticiones) {
+							moda = datos.get(i).getPrcp();
+							maximoNumRepeticiones = numRepeticiones;
+						}
+					}
+				}
+			}
+		}
+
+		if (numero == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTavg() == 0.00005)) {
+					int numRepeticiones = 0;
+					for (int j = 0; j < datos.size(); j++) {
+						if (datos.get(i).getTavg() == datos.get(j).getTavg()) {
+							numRepeticiones++;
+						}
+						if (numRepeticiones > maximoNumRepeticiones) {
+							moda = datos.get(i).getTavg();
+							maximoNumRepeticiones = numRepeticiones;
+						}
+					}
+				}
+			}
+		}
+		if (numero == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmax() == 0.00005)) {
+					int numRepeticiones = 0;
+					for (int j = 0; j < datos.size(); j++) {
+						if (!(datos.get(i).getTmax() == 0.00005)) {
+							if (datos.get(i).getTmax() == datos.get(j).getTmax()) {
+								numRepeticiones++;
+							}
+							if (numRepeticiones > maximoNumRepeticiones) {
+								moda = datos.get(i).getTmax();
+								maximoNumRepeticiones = numRepeticiones;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (numero == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmin() == 0.00005)) {
+					int numRepeticiones = 0;
+					for (int j = 0; j < datos.size(); j++) {
+						if (!(datos.get(i).getTmin() == 0.00005)) {
+							if (datos.get(i).getTmin() == datos.get(j).getTmin()) {
+								numRepeticiones++;
+							}
+							if (numRepeticiones > maximoNumRepeticiones) {
+								moda = datos.get(i).getTmin();
+								maximoNumRepeticiones = numRepeticiones;
+							}
+						}
+					}
+				}
+			}
+		}
+		texto = "La moda es:" + moda;
+		return (texto);
+
+	}
+
+	/**
+	 * El método cuenta la cantidad de datos presentes en el csv El método obvia los
+	 * valores de 0.00005
+	 * 
+	 * @param es el numero que determina si los valores a contar son los de prcp,
+	 *           tavg, tmax o tmin
+	 * @return es un texto que especifica los valores que participan en el conteo
+	 */
+	public String contar(int numero) {
+		String texto = "";
+
+		if (numero == 4) {
+			double contador = 0.0;
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getPrcp() == 0.00005)) {
+					contador += 1;
+				}
+			}
+			texto = "El conteo total es de " + contador;
+		} else if (numero == 5) {
+			double contador = 0.0;
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTavg() == 0.00005)) {
+					contador += 1;
+				}
+			}
+			texto = "El conteo total es de " + contador;
+		} else if (numero == 6) {
+			double contador = 0.0;
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmax() == 0.00005)) {
+					contador += 1;
+				}
+			}
+			texto = "El conteo total es de " + contador;
+		} else if (numero == 7) {
+			double contador = 0.0;
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmin() == 0.00005)) {
+					contador += 1;
+				}
+			}
+			texto = "El conteo total es de " + contador;
+		}
+		return texto;
+	}
+
+	/**
+	 * El método se encarga de buscar los datos que sean mayores o iguales a un
+	 * double a comparar El método obvia los valores iguales a 0.00005
+	 * 
+	 * @param es un double a comparar ingresado y un entero que especifica si se
+	 *           buscan los mayores de prcp, tavg, tmax o tmin
+	 * @return es un texto que especifica todos los valores de la fila en que se
+	 *         encuentra el mayor o igual al ingresado por el parámetro en formato
+	 *         tabla
+	 */
+	public String MayorigualQue(double d, int x) {
+		String cadena = "";
+		String contador = "";
+		if (x == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getPrcp() == 0.00005)) {
+					if (datos.get(i).getPrcp() >= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+			}
+		} else if (x == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTavg() == 0.00005)) {
+					if (datos.get(i).getTavg() >= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+
+			}
+		} else if (x == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmax() == 0.00005)) {
+					if (datos.get(i).getTmax() >= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+			}
+		} else if (x == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmin() == 0.00005)) {
+					if (datos.get(i).getTmin() >= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*\n";
+					}
+				}
+			}
+		}
+		return "Los valores maximos e iguales del valor ingresado son: " + contador;
+	}
+
+	/**
+	 * El método se encarga de buscar los datos que sean menores o iguales a un
+	 * double a comparar El método obvia los valores iguales a 0.00005
+	 * 
+	 * @param es un double a comparar ingresado y un entero que especifica si se
+	 *           buscan los menores de prcp, tavg, tmax o tmin
+	 * @return es un texto que especifica todos los valores de la fila en que se
+	 *         encuentra el menor o igual al ingresado por el parámetro en formato
+	 *         tabla
+	 */
+	public String MenorigualQue(double d, int x) {
+		String contador = "";
+		if (x == 4) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getPrcp() == 0.00005)) {
+					if (datos.get(i).getPrcp() <= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t*" + datos.get(i).getPrcp() + "*\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+
+			}
+		} else if (x == 5) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTavg() == 0.00005)) {
+					if (datos.get(i).getTavg() <= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t*" + datos.get(i).getTavg() + "*\t" + datos.get(i).getTmax() + "\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+			}
+		} else if (x == 6) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmax() == 0.00005)) {
+					if (datos.get(i).getTmax() <= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t*" + datos.get(i).getTmax() + "*\t" + datos.get(i).getTmin() + "\n";
+					}
+				}
+			}
+		} else if (x == 7) {
+			for (int i = 0; i < datos.size(); i++) {
+				if (!(datos.get(i).getTmin() == 0.00005)) {
+					if (datos.get(i).getTmin() <= d) {
+						contador += datos.get(i).getStation() + "\t" + datos.get(i).getName() + "\t" + datos.get(i).getDate() + "\t" + datos.get(i).getPrcp() + "\t" + datos.get(i).getTavg() + "\t" + datos.get(i).getTmax() + "\t*" + datos.get(i).getTmin() + "*\n";
+					}
+				}
+			}
+		}
+
+		return "Los datos menores o iguales al ingresado son: " + contador;
+	}
+
+	/**
+	 * El método crea un nuevo file llamado "Imprimir.csv" El método inserta por
+	 * defecto los valores del promedio de prcp, tavg, el maximo valor de tmax y el
+	 * mínimo de tmin con printWriter
+	 * 
+	 * @param es un texto que luego será insertado en el nuevo csv
+	 * @exception FileNotFoundException
+	 */
+	public void InsertarDatos(String txt) {
+		File file = new File("Imprimir.csv");
+		PrintWriter output = null;
+
+		String promedioPrcp = promedio(4);
+		String promedioTavg = promedio(5);
+		String Tempmax = mayorTotal(6);
+		String Tempmin = menorTotal(7);
+
+		try {
+
+			output = new PrintWriter(new FileWriter(file));
+			output.println(
+					"Esta es la lista que contiene el nombre de la estación, el nombre del lugar, la ciudad, y el promedio de prcp, promedio de tavg, temperatura maxima y minima");
+			output.println("Su texto es:\n" + txt);
+			output.println("La estacion es: " + datos.get(1).getStation());
+			output.println("El lugar es: " + datos.get(1).getName());
+			output.println("El pais es: " + datos.get(1).getCountry());
+			output.println(promedioPrcp);
+			output.println(promedioTavg);
+			output.println(Tempmax);
+			output.println(Tempmin);
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			if (output != null) {
+				output.close();
+			}
+		}
+
+	}
+
+	/**
+	 * Este método se encarga de mostrar lo que hay en el csv creado por el método
+	 * anterior El método lee el csv con un Scanner
+	 * 
+	 * @param es el path del archivo que va a leer el método
+	 * @return es el texto leido por el Scanner
+	 * @Exception FileNotFoundException
+	 */
+	public String mostrarCSV(String path) {
+		String txt = "";
+		try {
+			File file = new File(path);
+			Scanner input = new Scanner(file);
+
+			while (input.hasNextLine()) {
+				txt += input.nextLine() + "\n";
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return txt;
+	}
+
+}
