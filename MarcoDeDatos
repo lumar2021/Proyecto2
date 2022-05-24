@@ -1,4 +1,3 @@
-
 /**
  * Esta clase se encarga de leer el csv y separarlo por atributos de la clase Dato
  * 
@@ -106,10 +105,9 @@ public class MarcoDeDatos {
 	 * @return devuelve en un string un texto que contiene los valores del promedio
 	 *         especificado
 	 */
-	public String promedio(int a) {
+	public double promedio(int a) {
 		double suma = 0;
 		int contador = 0;
-		String texto = "";
 		double promedio = 0.0;
 		if (a == 4) {
 			for (int i = 0; i < datos.size(); i++) {
@@ -120,7 +118,7 @@ public class MarcoDeDatos {
 			}
 
 			promedio = suma / contador;
-			texto = "El promedio de prcp fue: " + promedio;
+			
 		}
 		if (a == 5) {
 			for (int i = 0; i < datos.size(); i++) {
@@ -129,11 +127,12 @@ public class MarcoDeDatos {
 					contador += 1;
 				}
 			}
+    
 
 			promedio = suma / contador;
-			texto = "El promedio de tavg fue: " + promedio;
-		}
-		if (a == 6) {
+      }
+			
+      if (a == 6) {
 			for (int i = 0; i < datos.size(); i++) {
 				if (!(datos.get(i).getTmax() == 0.00005)) {
 					suma += datos.get(i).getTmax();
@@ -141,7 +140,7 @@ public class MarcoDeDatos {
 				}
 			}
 			promedio = suma / contador;
-			texto = "El promedio de tmax fue: " + promedio;
+			
 		}
 		if (a == 7) {
 			for (int i = 0; i < datos.size(); i++) {
@@ -152,9 +151,9 @@ public class MarcoDeDatos {
 			}
 
 			promedio = suma / contador;
-			texto = "El promedio de temperaturas minimas fue: " + promedio;
+			
 		}
-		return texto;
+		return promedio;
 	}
 
 	/**
@@ -446,27 +445,27 @@ public class MarcoDeDatos {
 	 *           tavg, tmax o tmin
 	 * @return es un texto que especifica los valores que participan en el conteo
 	 */
-	public String contar(int numero) {
+	public int contar(int numero) {
 		String texto = "";
+    int contador = 0;
 
 		if (numero == 4) {
-			double contador = 0.0;
 			for (int i = 0; i < datos.size(); i++) {
 				if (!(datos.get(i).getPrcp() == 0.00005)) {
 					contador += 1;
 				}
 			}
-			texto = "El conteo total es de " + contador;
-		} else if (numero == 5) {
-			double contador = 0.0;
+		} 
+    else if (numero == 5) {
+			
 			for (int i = 0; i < datos.size(); i++) {
 				if (!(datos.get(i).getTavg() == 0.00005)) {
 					contador += 1;
 				}
 			}
-			texto = "El conteo total es de " + contador;
+			
 		} else if (numero == 6) {
-			double contador = 0.0;
+
 			for (int i = 0; i < datos.size(); i++) {
 				if (!(datos.get(i).getTmax() == 0.00005)) {
 					contador += 1;
@@ -474,15 +473,14 @@ public class MarcoDeDatos {
 			}
 			texto = "El conteo total es de " + contador;
 		} else if (numero == 7) {
-			double contador = 0.0;
 			for (int i = 0; i < datos.size(); i++) {
 				if (!(datos.get(i).getTmin() == 0.00005)) {
 					contador += 1;
 				}
 			}
-			texto = "El conteo total es de " + contador;
+
 		}
-		return texto;
+		return contador;
 	}
 
 	/**
@@ -597,8 +595,8 @@ public class MarcoDeDatos {
 		File file = new File("Imprimir.csv");
 		PrintWriter output = null;
 
-		String promedioPrcp = promedio(4);
-		String promedioTavg = promedio(5);
+		double promedioPrcp = promedio(4);
+		double promedioTavg = promedio(5);
 		String Tempmax = mayorTotal(6);
 		String Tempmin = menorTotal(7);
 
@@ -611,8 +609,8 @@ public class MarcoDeDatos {
 			output.println("La estacion es: " + datos.get(1).getStation());
 			output.println("El lugar es: " + datos.get(1).getName());
 			output.println("El pais es: " + datos.get(1).getCountry());
-			output.println(promedioPrcp);
-			output.println(promedioTavg);
+			output.println("El promedio de prcp fue: "+promedioPrcp);
+			output.println("El promedio de tavg fue: "+promedioTavg);
 			output.println(Tempmax);
 			output.println(Tempmin);
 
@@ -648,5 +646,4 @@ public class MarcoDeDatos {
 		}
 		return txt;
 	}
-
 }
