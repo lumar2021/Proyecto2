@@ -68,7 +68,7 @@ public class Main {
 				System.out.println("Seleccione a que dato sacar promedio: ");
 				System.out.println("");
 				a = mostrarMenuGeneral();
-				System.out.println(MD.promedio(a));
+				System.out.println("El promedio del dato es: "+MD.promedio(a));
 				Sleep();
 				break;
 			case 2:
@@ -128,7 +128,7 @@ public class Main {
 				System.out.println("Seleccione el dato del que desea saber la cantidad de valores que este contiene");
 				System.out.println("");
 				a = mostrarMenuGeneral();
-				System.out.println(MD.contar(a));
+				System.out.println("El total del conteo es "+MD.contar(a));
 				Sleep();
 				break;
 			case 8:
